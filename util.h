@@ -6,10 +6,16 @@
 #define LEXICO_C_UTIL_H
 
 enum tolkens{
+    tolkens_de_controle, // tolkens de controle
+    ERRO,
+    END_OF_FILE,
+    WHITE_SPACE,
+    QUEBRA_LINHA,
+
+    comeco_terminais, // tolkens terminais
     IDENTIFICADOR,
     E,
     NUMERO_INTEIRO,
-    QUEBRA_LINHA,
     COMENTARIO_DE_BLOCO_ABERTO,
     DIVISAO,
     PONTO_E_VIRGULA,
@@ -64,9 +70,23 @@ enum tolkens{
     VARIAVEIS,
     VERDADEIRO,
     PROCEDIMENTO,
-    ERRO,
-    END_OF_FILE,
-    WHITE_SPACE
-    };
+
+    comeco_nao_terminais, // nao terminais
+    START_NT,
+    BLOCO_VARIAVEIS_NT,
+    PROCEDIMENTO_FUNCAO_NT,
+    BLOCO_COMANDOS_NT,
+    DECLARA_PROCEDIMENTO_NT,
+    DECLARA_FUNCAO_NT,
+    DECLARA_PARAMETROS_NT,
+    PARAMETROS_NT,
+    TIPO_BASICO_NT,
+    DECLARA_IDENTIFICADOR_NT,
+    DECLARACOES_NT,
+    DECLARA_VARIAVEIS_NT,
+    DECLARA_TIPO_NT,
+    DECLARACOES_AUXILIAR_NT,
+    fim_nao_terminais,
+};
 
 #endif //LEXICO_C_UTIL_H

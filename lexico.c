@@ -420,32 +420,31 @@ const int automata[173][127] = {
 void continue_reading(int *current_state, int next_state, int *current_position, int *last_word_ending, int *last_final_state){
     *current_state = next_state;
     (*current_position)++;
-    if(check_final(*current_state) != 0){
+    if(check_final(*current_state) != ERRO){
         *last_word_ending = *current_position;
         *last_final_state = *current_state;
     }
 }
 
-int restart_reading(char current_input, int last_word_ending, int *current_state, int *word_start, int *current_position, int last_final_state, FILE *entry, int initial_state){
+int restart_reading(List *input, char current_input, int last_word_ending, int word_start, int last_final_state, char *word, int *coluna){
     int final_state = ERRO;
 
-    if(last_word_ending != *word_start){ // a valid word exists
+    if(last_word_ending != word_start){ // a valid word exists
+        word = get_word_list(input, last_word_ending);
+        *coluna += last_word_ending;
         final_state = check_final(last_final_state);
-        *word_start = last_word_ending;
     } else{ // caractere não existe no alfabeto
+        word = get_word_list(input, 1);
+        (*coluna)++;
         if (current_input <= 0){
             final_state = END_OF_FILE;
         } else if(current_input == 32){
             final_state = WHITE_SPACE;
         }
-        (*word_start)++;
     }
 
-//    *current_position = *word_start;
-//    *last_word_ending = *word_start;
-//    *current_state = initial_state;
-//    *last_final_state = 0;
-    fseek(entry, *word_start, SEEK_SET);
+
+    remove_list_word(input, word_start);
     return final_state;
 }
 
@@ -456,9 +455,9 @@ int change_state(char current_input, int current_state){
     return automata[current_state][current_input-1];
 }
 
-int check_automata(int initial_state, FILE *entry, int input_size){
+int check_automata(int initial_state, FILE *entry, List *input, int *coluna, char *erro){
+    int word_start = 0;
     int current_state = initial_state;
-    static int word_start = 0;
     int last_word_ending = word_start;
     int current_position = word_start;
     int last_final_state = 0;
@@ -466,18 +465,42 @@ int check_automata(int initial_state, FILE *entry, int input_size){
 
 
     do {
-        current_input = fgetc(entry);
+        if(get_list_size(input) == current_position){
+            current_input = fgetc(entry);
+            insert_list(input, current_input);
+        }else{
+            current_input = get_list_char(input, current_position);
+        }
+
         int next_state = change_state(current_input, current_state);
 
         if(next_state == 0 ) { // erro
-            return (restart_reading(current_input, last_word_ending, &current_state, &word_start, &current_position, last_final_state, entry, initial_state));
+            return (restart_reading(input, current_input, last_word_ending, word_start, last_final_state, erro, coluna));
 
         } else {
             continue_reading(&current_state, next_state, &current_position, &last_word_ending, &last_final_state);
         }
 
-    } while (current_position <= input_size);
+    } while (current_input != EOF);
 
     return END_OF_FILE;
+}
+
+int advance(int initial_state, FILE *entry, List *input, int *linha, int *coluna, char *word){
+    if(word != NULL){
+        char *aux = word;
+        free(aux);
+    }
+
+    int tolken;
+
+    do{
+        tolken = check_automata(initial_state, entry, input, coluna, word);
+    }while(tolken == WHITE_SPACE);
+
+    if(tolken == QUEBRA_LINHA){
+        (*coluna) = 1;
+        (*linha)++;
+    }
 }
 
