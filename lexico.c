@@ -140,8 +140,8 @@ int  check_final(int state){
             return DIV;
         case 67:
             return FIM;
-        case 171:
-            return COMENTARIO_DE_BLOCO_ABERTO;
+//        case 171:
+//            return COMENTARIO_DE_BLOCO_ABERTO;
         case 40:
             return DIVISAO;
         case 42:
@@ -426,16 +426,16 @@ void continue_reading(int *current_state, int next_state, int *current_position,
     }
 }
 
-int restart_reading(List *input, char current_input, int last_word_ending, int word_start, int last_final_state, char *word, int *coluna){
+int restart_reading(List *input, char current_input, int last_word_ending, int word_start, int last_final_state, char **word){
     int final_state = ERRO;
 
     if(last_word_ending != word_start){ // a valid word exists
-        word = get_word_list(input, last_word_ending);
-        *coluna += last_word_ending;
+        *word = get_word_list(input, last_word_ending);
+
         final_state = check_final(last_final_state);
     } else{ // caractere não existe no alfabeto
-        word = get_word_list(input, 1);
-        (*coluna)++;
+        *word = get_word_list(input, 1);
+
         if (current_input <= 0){
             final_state = END_OF_FILE;
         } else if(current_input == 32){
@@ -455,7 +455,7 @@ int change_state(char current_input, int current_state){
     return automata[current_state][current_input-1];
 }
 
-int check_automata(int initial_state, FILE *entry, List *input, int *coluna, char *erro){
+int check_automata(int initial_state, FILE *entry, List *input, char **erro){
     int word_start = 0;
     int current_state = initial_state;
     int last_word_ending = word_start;
@@ -475,7 +475,7 @@ int check_automata(int initial_state, FILE *entry, List *input, int *coluna, cha
         int next_state = change_state(current_input, current_state);
 
         if(next_state == 0 ) { // erro
-            return (restart_reading(input, current_input, last_word_ending, word_start, last_final_state, erro, coluna));
+            return (restart_reading(input, current_input, last_word_ending, word_start, last_final_state, erro));
 
         } else {
             continue_reading(&current_state, next_state, &current_position, &last_word_ending, &last_final_state);
@@ -486,21 +486,35 @@ int check_automata(int initial_state, FILE *entry, List *input, int *coluna, cha
     return END_OF_FILE;
 }
 
-int advance(int initial_state, FILE *entry, List *input, int *linha, int *coluna, char *word){
+int advance(int initial_state, FILE *entry, List *input, int *linha, int *coluna, char **word){
     if(word != NULL){
-        char *aux = word;
+        char *aux = *word;
         free(aux);
     }
 
     int tolken;
 
     do{
-        tolken = check_automata(initial_state, entry, input, coluna, word);
+        tolken = check_automata(initial_state, entry, input, word);
+        if(tolken == QUEBRA_LINHA || tolken == COMENTARIO_DE_LINHA){
+            (*coluna) = 1;
+            (*linha)++;
+            continue;
+        } else if(tolken == COMENTARIO_DE_BLOCO){
+            int i;
+            for(i = 0; i < strlen(*word); i++){
+                if((*word)[i] == '\n'){
+                    (*linha)++;
+                    (*coluna) = 1;
+                } else{
+                    (*coluna)++;
+                }
+            }
+            continue;
+        } else{
+            (*coluna)+= strlen(*word);
+        }
     }while(tolken == WHITE_SPACE);
 
-    if(tolken == QUEBRA_LINHA){
-        (*coluna) = 1;
-        (*linha)++;
-    }
 }
 

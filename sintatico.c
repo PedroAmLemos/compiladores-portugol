@@ -45,6 +45,10 @@ int lista_comandos_nt(Stack *stack, int input_tolken);
 
 int lista_comandos_aux_nt(Stack *stack, int input_tolken);
 
+int comandos_nt(Stack *stack, int input_tolken);
+
+int comandos_aux_1_nt(Stack *stack, int input_tolken);
+
 int parser(int input_tolken, int stack_tolken, Stack *stack){
     switch (stack_tolken) {
         case START_NT:
@@ -87,6 +91,11 @@ int parser(int input_tolken, int stack_tolken, Stack *stack){
             return lista_comandos_nt(stack, input_tolken);
         case LISTA_COMANDOS_AUXILIAR_NT:
             return lista_comandos_aux_nt(stack, input_tolken);
+        case COMANDOS_NT:
+            return comandos_nt(stack, input_tolken);
+        case COMANDOS_AUX_1_NT:
+            return comandos_aux_1_nt(stack, input_tolken);
+
 
 
         default:
@@ -103,6 +112,7 @@ int start_nt(Stack *stack, int input_tolken){
             insert_stack(stack, BLOCO_VARIAVEIS_NT);
             insert_stack(stack, PONTO_E_VIRGULA);
             insert_stack(stack, IDENTIFICADOR);
+            insert_stack(stack, ALGORITMO);
             break;
         default:
             return 0;
@@ -141,6 +151,7 @@ int declara_procedimento_nt(Stack *stack, int input_tolken){
             insert_stack(stack, PONTO_E_VIRGULA);
             insert_stack(stack, PARAMETROS_NT);
             insert_stack(stack, IDENTIFICADOR);
+            insert_stack(stack, PROCEDIMENTO);
             break;
 
         default:
@@ -160,6 +171,7 @@ int declara_funcao_nt(Stack *stack, int input_tolken){
             insert_stack(stack, DOIS_PONTOS);
             insert_stack(stack, PARAMETROS_NT);
             insert_stack(stack, IDENTIFICADOR);
+            insert_stack(stack, FUNCAO);
             break;
         default:
             return 0;
@@ -172,6 +184,7 @@ int parametros_nt(Stack *stack, int input_tolken){
         case ABRE_PARENTESES:
             insert_stack(stack, FECHA_PARENTESES);
             insert_stack(stack, DECLARA_IDENTIFICADOR_NT);
+            insert_stack(stack, ABRE_PARENTESES);
             break;
         case PONTO_E_VIRGULA:
         case DOIS_PONTOS:
@@ -207,6 +220,7 @@ int bloco_variaveis_nt(Stack *stack, int input_tolken){
     switch (input_tolken) {
         case VARIAVEIS:
             insert_stack(stack, DECLARACOES_NT);
+            insert_stack(stack, VARIAVEIS);
             break;
         case INICIO:
         case PROCEDIMENTO:
@@ -271,6 +285,7 @@ int declara_tipo_nt(Stack *stack, int input_tolken){
             insert_stack(stack, VETOR_MATRIZ_NT);
             insert_stack(stack, IGUAL);
             insert_stack(stack, IDENTIFICADOR);
+            insert_stack(stack, TIPO);
             break;
         default:
             return 0;
@@ -288,6 +303,8 @@ int declara_variaveis_nt(Stack *stack, int input_tolken){
             insert_stack(stack, PONTO_E_VIRGULA);
             insert_stack(stack, DECLARA_IDENTIFICADOR_NT);
             insert_stack(stack, DOIS_PONTOS);
+            insert_stack(stack, TIPO_BASICO_NT);
+            break;
         default:
             return 0;
     }
@@ -298,6 +315,7 @@ int declara_identificador_nt(Stack *stack, int input_tolken){
     switch (input_tolken) {
         case IDENTIFICADOR:
             insert_stack(stack, DECLARA_IDENTIFICADOR_AUXILIAR_NT);
+            insert_stack(stack, IDENTIFICADOR);
             break;
         default:
             return 0;
@@ -308,8 +326,8 @@ int declara_identificador_aux_nt(Stack *stack, int input_tolken){
     switch (input_tolken) {
         case VIRGULA:
             insert_stack(stack, DECLARA_IDENTIFICADOR_NT);
+            insert_stack(stack, VIRGULA);
             break;
-        case IDENTIFICADOR:
         case FECHA_PARENTESES:
         case PONTO_E_VIRGULA:
             break;
@@ -323,7 +341,10 @@ int declara_identificador_aux_nt(Stack *stack, int input_tolken){
 int vetor_matriz_nt(Stack *stack, int input_tolken){
     switch (input_tolken) {
         case VETOR:
+            insert_stack(stack, VETOR);
+            break;
         case MATRIZ:
+            insert_stack(stack, MATRIZ);
             break;
         default:
             return 0;
@@ -337,6 +358,7 @@ int dimensao_nt(Stack *stack, int input_tolken){
             insert_stack(stack, DIMENSAO_AUXILIAR_NT);
             insert_stack(stack, NUMERO_INTEIRO);
             insert_stack(stack, DOIS_PONTOS);
+            insert_stack(stack, NUMERO_INTEIRO);
             break;
         default:
             return 0;
@@ -349,9 +371,9 @@ int dimenso_auxiliar_nt(Stack *stack, int input_tolken){
     switch (input_tolken) {
         case VIRGULA:
             insert_stack(stack, DIMENSAO_NT);
+            insert_stack(stack, VIRGULA);
             break;
         case FECHA_COLCHETES:
-        case NUMERO_INTEIRO:
             break;
         default:
             return 0;
@@ -361,10 +383,19 @@ int dimenso_auxiliar_nt(Stack *stack, int input_tolken){
 int tipo_bastico_nt(Stack *stack, int input_tolken){
     switch (input_tolken) {
         case INTEIRO:
+            insert_stack(stack, INTEIRO);
+            break;
         case REAL:
+            insert_stack(stack, REAL);
+            break;
         case CARACTERE:
+            insert_stack(stack, CARACTERE);
+            break;
         case LOGICO:
+            insert_stack(stack, LOGICO);
+            break;
         case IDENTIFICADOR:
+            insert_stack(stack, IDENTIFICADOR);
             break;
         default:
             return 0;
@@ -377,6 +408,7 @@ int bloco_comandos_nt(Stack *stack, int input_tolken){
         case INICIO:
             insert_stack(stack, FIM);
             insert_stack(stack, LISTA_COMANDOS_NT);
+            insert_stack(stack, INICIO);
             break;
         default:
             return 0;
@@ -396,6 +428,7 @@ int lista_comandos_nt(Stack *stack, int input_tolken){
         case IMPRIMA:
             insert_stack(stack, LISTA_COMANDOS_AUXILIAR_NT);
             insert_stack(stack, PONTO_E_VIRGULA);
+            insert_stack(stack, COMANDOS_NT);
             break;
         default:
             return 0;
@@ -405,12 +438,44 @@ int lista_comandos_nt(Stack *stack, int input_tolken){
 
 int lista_comandos_aux_nt(Stack *stack, int input_tolken){
     switch (input_tolken) {
-        case PONTO_E_VIRGULA:
+        case IDENTIFICADOR:
+        case SE:
+        case ENQUANTO:
+        case PARA:
+        case REPITA:
+        case LEIA:
+        case IMPRIMA:
             insert_stack(stack, LISTA_COMANDOS_NT);
-            break;
         case FIM:
         case SENAO:
         case ATE:
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+int comandos_nt(Stack *stack, int input_tolken){
+    switch (input_tolken) {
+        case IDENTIFICADOR:
+            insert_stack(stack, COMANDOS_AUX_1_NT);
+            insert_stack(stack, IDENTIFICADOR);
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+int comandos_aux_1_nt(Stack *stack, int input_tolken){
+    switch (input_tolken) {
+        case ABRE_PARENTESES:
+            insert_stack(stack, FECHA_PARENTESES);
+            insert_stack(stack, EXP_ITER_NT);
+            insert_stack(stack, ABRE_PARENTESES);
+            break;
+        case PONTO_E_VIRGULA:
             break;
         default:
             return 0;

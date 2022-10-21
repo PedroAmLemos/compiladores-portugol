@@ -92,6 +92,9 @@ enum tolkens{
     DIMENSAO_AUXILIAR_NT,
     LISTA_COMANDOS_NT,
     LISTA_COMANDOS_AUXILIAR_NT,
+    COMANDOS_NT,
+    COMANDOS_AUX_1_NT,
+    EXP_ITER_NT,
     fim_nao_terminais,
 };
 

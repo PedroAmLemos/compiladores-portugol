@@ -1,2 +1,1 @@
-Variaveis
-    inteiro: bb; //Declaracao de uma variavel do tipo inteiro
+Algoritmo tc01;
