@@ -95,6 +95,9 @@ enum tolkens{
     COMANDOS_NT,
     COMANDOS_AUX_1_NT,
     EXP_ITER_NT,
+    EXPRESSAO_NT,
+    VARIAVEIS_AUX_NT,
+    COMANDOS_AUX_2_NT,
     fim_nao_terminais,
 };
 
