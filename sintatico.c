@@ -51,6 +51,10 @@ int comandos_aux_1_nt(Stack *stack, int input_tolken);
 
 int comandos_aux_2_nt(Stack *stack, int input_tolken);
 
+int comandos_aux_3_nt(Stack *stack, int input_tolken);
+
+int expressao_nt(Stack *stack, int input_tolken);
+
 int parser(int input_tolken, int stack_tolken, Stack *stack){
     switch (stack_tolken) {
         case START_NT:
@@ -99,10 +103,10 @@ int parser(int input_tolken, int stack_tolken, Stack *stack){
             return comandos_aux_1_nt(stack, input_tolken);
         case COMANDOS_AUX_2_NT:
             return comandos_aux_2_nt(stack, input_tolken);
-
-
-
-
+        case COMANDOS_AUX_3_NT:
+            return comandos_aux_3_nt(stack, input_tolken);
+        case EXPRESSAO_NT:
+            return expressao_nt(stack, input_tolken);
         default:
             return 0;
     }
@@ -473,6 +477,36 @@ int comandos_nt(Stack *stack, int input_tolken){
             insert_stack(stack, ENTAO);
             insert_stack(stack, EXPRESSAO_NT);
             insert_stack(stack, SE);
+        case ENQUANTO:
+            insert_stack(stack, ENQUANTO);
+            insert_stack(stack, FIM);
+            insert_stack(stack, LISTA_COMANDOS_NT);
+            insert_stack(stack, FACA);
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, ENQUANTO);
+        case PARA:
+            insert_stack(stack, COMANDOS_AUX_3_NT);
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, ATE);
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, DE);
+            insert_stack(stack, IDENTIFICADOR);
+            insert_stack(stack, PARA);
+        case REPITA:
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, ATE);
+            insert_stack(stack, LISTA_COMANDOS_NT);
+            insert_stack(stack, REPITA);
+        case LEIA:
+            insert_stack(stack, FECHA_PARENTESES);
+            insert_stack(stack, VARIAVEL_NT);
+            insert_stack(stack, ABRE_PARENTESES);
+            insert_stack(stack, LEIA);
+        case IMPRIMA:
+            insert_stack(stack, FECHA_PARENTESES);
+            insert_stack(stack, EXPR_ITER_NT);
+            insert_stack(stack, ABRE_PARENTESES);
+            insert_stack(stack, IMPRIMA);
         default:
             return 0;
     }
@@ -483,16 +517,16 @@ int comandos_aux_1_nt(Stack *stack, int input_tolken){
     switch (input_tolken) {
         case ABRE_PARENTESES:
             insert_stack(stack, FECHA_PARENTESES);
-            insert_stack(stack, EXP_ITER_NT);
+            insert_stack(stack, EXPR_ITER_NT);
             insert_stack(stack, ABRE_PARENTESES);
             break;
         case PONTO_E_VIRGULA:
             break;
-        case ATRIBUICAO:
+        case ATRIBUICAO: //todo perguntar isso pro pedro
         case ABRE_COLCHETES:
             insert_stack(stack, EXPRESSAO_NT);
             insert_stack(stack, ATRIBUICAO);
-            insert_stack(stack, VARIAVEIS_AUX_NT);
+            insert_stack(stack, VARIAVEL_AUX_NT);
             break;
         default:
             return 0;
@@ -515,4 +549,35 @@ int comandos_aux_2_nt(Stack *stack, int input_tolken){
         default:
             return 0;
     }
+}
+
+int comandos_aux_3_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case FACA:
+            insert_stack(stack, PARA);
+            insert_stack(stack, FIM);
+            insert_stack(stack, LISTA_COMANDOS_NT);
+            insert_stack(stack, FACA);
+            break;
+
+        case PASSO:
+            insert_stack(stack, PARA);
+            insert_stack(stack, FIM);
+            insert_stack(stack, LISTA_COMANDOS_NT);
+            insert_stack(stack, FACA);
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, PASSO);
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+int expressao_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        default:
+            return 0;
+    }
+    return 1;
 }
