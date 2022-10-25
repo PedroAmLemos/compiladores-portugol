@@ -100,6 +100,14 @@ enum tolkens{
     EXPRESSAO_NT,
     VARIAVEL_NT,
     VARIAVEL_AUX_NT,
+    EXPRESSAO_AUX_NT,
+    EXPRESSAO_SIMPLES_NT,
+    EXPRESSAO_SIMPLES_AUX_NT,
+    TERMO_NT,
+    TERMO_AUX_NT,
+    FATOR_NT,
+    FATOR_AUX_NT,
+    EXPR_ITER_AUX_NT,
     fim_nao_terminais,
 };
 

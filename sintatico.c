@@ -55,6 +55,28 @@ int comandos_aux_3_nt(Stack *stack, int input_tolken);
 
 int expressao_nt(Stack *stack, int input_tolken);
 
+int expressao_aux_nt(Stack *stack, int input_tolken);
+
+int expressao_simples_nt(Stack *stack, int input_tolken);
+
+int expressao_simples_aux_nt(Stack *stack, int input_tolken);
+
+int termo_nt(Stack *stack, int input_tolken);
+
+int termo_aux_nt(Stack *stack, int input_tolken);
+
+int fator_nt(Stack *stack, int input_tolken);
+
+int fator_aux_nt(Stack *stack, int input_tolken);
+
+int variavel_nt(Stack *stack, int input_tolken);
+
+int variavel_aux_nt(Stack *stack, int input_tolken);
+
+int expr_iter_nt(Stack *stack, int input_tolken);
+
+int expr_iter_aux_nt(Stack *stack, int input_tolken);
+
 int parser(int input_tolken, int stack_tolken, Stack *stack){
     switch (stack_tolken) {
         case START_NT:
@@ -107,6 +129,29 @@ int parser(int input_tolken, int stack_tolken, Stack *stack){
             return comandos_aux_3_nt(stack, input_tolken);
         case EXPRESSAO_NT:
             return expressao_nt(stack, input_tolken);
+        case EXPRESSAO_AUX_NT:
+            return expressao_aux_nt(stack, input_tolken);
+        case EXPRESSAO_SIMPLES_NT:
+            return expressao_simples_nt(stack, input_tolken);
+        case EXPRESSAO_SIMPLES_AUX_NT:
+            return expressao_simples_aux_nt(stack, input_tolken);
+        case TERMO_NT:
+            return termo_nt(stack, input_tolken);
+        case TERMO_AUX_NT:
+            return termo_aux_nt(stack, input_tolken);
+        case FATOR_NT:
+            return fator_nt(stack, input_tolken);
+        case FATOR_AUX_NT:
+            return fator_aux_nt(stack, input_tolken);
+        case VARIAVEL_NT:
+            return variavel_nt(stack, input_tolken);
+        case VARIAVEL_AUX_NT:
+            return variavel_aux_nt(stack, input_tolken);
+        case EXPR_ITER_NT:
+            return expr_iter_nt(stack, input_tolken);
+        case EXPR_ITER_AUX_NT:
+            return expr_iter_aux_nt(stack, input_tolken);
+
         default:
             return 0;
     }
@@ -477,6 +522,7 @@ int comandos_nt(Stack *stack, int input_tolken){
             insert_stack(stack, ENTAO);
             insert_stack(stack, EXPRESSAO_NT);
             insert_stack(stack, SE);
+            break;
         case ENQUANTO:
             insert_stack(stack, ENQUANTO);
             insert_stack(stack, FIM);
@@ -484,6 +530,7 @@ int comandos_nt(Stack *stack, int input_tolken){
             insert_stack(stack, FACA);
             insert_stack(stack, EXPRESSAO_NT);
             insert_stack(stack, ENQUANTO);
+            break;
         case PARA:
             insert_stack(stack, COMANDOS_AUX_3_NT);
             insert_stack(stack, EXPRESSAO_NT);
@@ -492,21 +539,25 @@ int comandos_nt(Stack *stack, int input_tolken){
             insert_stack(stack, DE);
             insert_stack(stack, IDENTIFICADOR);
             insert_stack(stack, PARA);
+            break;
         case REPITA:
             insert_stack(stack, EXPRESSAO_NT);
             insert_stack(stack, ATE);
             insert_stack(stack, LISTA_COMANDOS_NT);
             insert_stack(stack, REPITA);
+            break;
         case LEIA:
             insert_stack(stack, FECHA_PARENTESES);
             insert_stack(stack, VARIAVEL_NT);
             insert_stack(stack, ABRE_PARENTESES);
             insert_stack(stack, LEIA);
+            break;
         case IMPRIMA:
             insert_stack(stack, FECHA_PARENTESES);
             insert_stack(stack, EXPR_ITER_NT);
             insert_stack(stack, ABRE_PARENTESES);
             insert_stack(stack, IMPRIMA);
+            break;
         default:
             return 0;
     }
@@ -576,8 +627,357 @@ int comandos_aux_3_nt(Stack *stack, int input_tolken){
 
 int expressao_nt(Stack *stack, int input_tolken){
     switch(input_tolken) {
+        case ABRE_PARENTESES:
+        case NAO:
+        case NUMERO_INTEIRO:
+        case NUMERO_REAL:
+        case VERDADEIRO:
+        case FALSO:
+        case STRING:
+        case IDENTIFICADOR:
+        case MAIS:
+        case MENOS:
+            insert_stack(stack, EXPRESSAO_AUX_NT);
+            insert_stack(stack, EXPRESSAO_SIMPLES_NT);
+            break;
         default:
             return 0;
     }
+    return 1;
+}
+
+int expressao_aux_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case IGUAL:
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, IGUAL);
+            break;
+        case DIFERENTE:
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, DIFERENTE);
+            break;
+        case MENOR:
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, MENOR);
+            break;
+        case MENOR_IGUAL:
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, MENOR_IGUAL);
+            break;
+        case MAIOR_IGUAL:
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, MAIOR_IGUAL);
+            break;
+        case MAIOR:
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, MAIOR);
+            break;
+        case ENTAO:
+        case FACA:
+        case ATE:
+        case PASSO:
+        case FECHA_PARENTESES:
+        case VIRGULA:
+        case PONTO_E_VIRGULA:
+        case FECHA_COLCHETES:
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+
+}
+int expressao_simples_nt(Stack *stack, int input_tolken){
+
+    switch(input_tolken) {
+        case MAIS:
+            insert_stack(stack, EXPRESSAO_SIMPLES_AUX_NT);
+            insert_stack(stack, TERMO_NT);
+            insert_stack(stack, MAIS);
+            break;
+        case MENOS:
+            insert_stack(stack, EXPRESSAO_SIMPLES_AUX_NT);
+            insert_stack(stack, TERMO_NT);
+            insert_stack(stack, MENOS);
+            break;
+        case ABRE_PARENTESES:
+        case NAO:
+        case NUMERO_INTEIRO:
+        case NUMERO_REAL:
+        case VERDADEIRO:
+        case FALSO:
+        case STRING:
+        case IDENTIFICADOR:
+            insert_stack(stack, EXPRESSAO_SIMPLES_AUX_NT);
+            insert_stack(stack, TERMO_NT);
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+
+}
+
+int expressao_simples_aux_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case MAIS:
+            insert_stack(stack, EXPRESSAO_SIMPLES_NT);
+            insert_stack(stack, MAIS);
+            break;
+        case MENOS:
+            insert_stack(stack, EXPRESSAO_SIMPLES_NT);
+            insert_stack(stack, MENOS);
+            break;
+        case OU:
+            insert_stack(stack, EXPRESSAO_SIMPLES_NT);
+            insert_stack(stack, OU);
+            break;
+        case ENTAO:
+        case FACA:
+        case ATE:
+        case PASSO:
+        case FECHA_PARENTESES:
+        case VIRGULA:
+        case PONTO_E_VIRGULA:
+        case FECHA_COLCHETES:
+        case IGUAL:
+        case DIFERENTE:
+        case MENOR:
+        case MENOR_IGUAL:
+        case MAIOR:
+        case MAIOR_IGUAL:
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+int termo_nt(Stack *stack, int input_tolken){
+
+    switch(input_tolken) {
+        case ABRE_PARENTESES:
+        case NAO:
+        case NUMERO_INTEIRO:
+        case NUMERO_REAL:
+        case VERDADEIRO:
+        case FALSO:
+        case STRING:
+        case IDENTIFICADOR:
+            insert_stack(stack, TERMO_AUX_NT);
+            insert_stack(stack, FATOR_NT);
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+
+
+int termo_aux_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case ENTAO:
+        case FACA:
+        case ATE:
+        case PASSO:
+        case FECHA_PARENTESES:
+        case VIRGULA:
+        case PONTO_E_VIRGULA:
+        case FECHA_COLCHETES:
+        case IGUAL:
+        case DIFERENTE:
+        case MENOR:
+        case MENOR_IGUAL:
+        case MAIOR_IGUAL:
+        case MAIOR:
+        case MAIS:
+        case MENOS:
+        case OU:
+            break;
+        case VEZES:
+            insert_stack(stack, TERMO_NT);
+            insert_stack(stack, VEZES);
+            break;
+        case DIVISAO:
+            insert_stack(stack, TERMO_NT);
+            insert_stack(stack, DIVISAO);
+            break;
+        case DIV:
+            insert_stack(stack, TERMO_NT);
+            insert_stack(stack, DIV);
+            break;
+        case E:
+            insert_stack(stack, TERMO_NT);
+            insert_stack(stack, E);
+            break;
+        default:
+            return 0;
+
+    }
+    return 1;
+}
+
+int fator_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case ABRE_PARENTESES:
+            insert_stack(stack, FECHA_PARENTESES);
+            insert_stack(stack, EXPRESSAO_NT);
+            insert_stack(stack, ABRE_PARENTESES);
+            break;
+        case NAO:
+            insert_stack(stack, FATOR_NT);
+            insert_stack(stack, NAO);
+            break;
+        case NUMERO_INTEIRO:
+            insert_stack(stack, NUMERO_INTEIRO);
+            break;
+        case NUMERO_REAL:
+            insert_stack(stack, NUMERO_REAL);
+            break;
+        case VERDADEIRO:
+            insert_stack(stack, VERDADEIRO);
+            break;
+        case FALSO:
+            insert_stack(stack, FALSO);
+            break;
+        case STRING:
+            insert_stack(stack, STRING);
+            break;
+        case IDENTIFICADOR:
+            insert_stack(stack, FATOR_AUX_NT);
+            insert_stack(stack, IDENTIFICADOR);
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+int fator_aux_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case ABRE_PARENTESES:
+            insert_stack(stack, FECHA_PARENTESES);
+            insert_stack(stack, EXPR_ITER_NT);
+            insert_stack(stack, ABRE_PARENTESES);
+            break;
+        case ATRIBUICAO:
+        case FECHA_PARENTESES:
+        case ENTAO:
+        case FACA:
+        case ATE:
+        case PASSO:
+        case VIRGULA:
+        case PONTO_E_VIRGULA:
+        case FECHA_COLCHETES:
+        case IGUAL:
+        case DIFERENTE:
+        case MENOR:
+        case MENOR_IGUAL:
+        case MAIOR_IGUAL:
+        case MAIOR:
+        case MAIS:
+        case MENOS:
+        case OU:
+        case VEZES:
+        case DIVISAO:
+        case DIV:
+        case E:
+        case ABRE_COLCHETES:
+            insert_stack(stack, VARIAVEL_AUX_NT);
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+int variavel_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case IDENTIFICADOR:
+            insert_stack(stack, VARIAVEL_AUX_NT);
+            insert_stack(stack, IDENTIFICADOR);
+            break;
+        default:
+            return 0;
+    }
+
+    return 1;
+}
+
+int variavel_aux_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case ABRE_COLCHETES:
+            insert_stack(stack, FECHA_COLCHETES);
+            insert_stack(stack, EXPR_ITER_NT);
+            insert_stack(stack, ABRE_COLCHETES);
+            break;
+        case ATRIBUICAO:
+        case FECHA_PARENTESES:
+        case ENTAO:
+        case FACA:
+        case ATE:
+        case PASSO:
+        case VIRGULA:
+        case PONTO_E_VIRGULA:
+        case FECHA_COLCHETES:
+        case IGUAL:
+        case DIFERENTE:
+        case MENOR:
+        case MENOR_IGUAL:
+        case MAIOR_IGUAL:
+        case MAIOR:
+        case MAIS:
+        case MENOS:
+        case OU:
+        case VEZES:
+        case DIVISAO:
+        case DIV:
+        case E:
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+int expr_iter_nt(Stack *stack, int input_tolken){
+    switch(input_tolken) {
+        case MAIS:
+        case MENOS:
+        case ABRE_PARENTESES:
+        case NAO:
+        case NUMERO_INTEIRO:
+        case NUMERO_REAL:
+        case VERDADEIRO:
+        case FALSO:
+        case STRING:
+        case IDENTIFICADOR: //variavel
+            insert_stack(stack, EXPR_ITER_AUX_NT);
+            insert_stack(stack, EXPRESSAO_NT);
+            break;
+
+        default:
+            return 0;
+    }
+
+    return 1;
+
+}
+
+int expr_iter_aux_nt(Stack *stack, int input_tolken) {
+
+    switch (input_tolken) {
+        case VIRGULA:
+            insert_stack(stack, EXPR_ITER_NT);
+            insert_stack(stack, VIRGULA);
+            break;
+        case FECHA_PARENTESES:
+        case FECHA_COLCHETES:
+            break;
+        default:
+            return 0;
+    }
+
+
     return 1;
 }
